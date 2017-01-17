@@ -3,7 +3,7 @@ Type: Package
 Title: Forecasting time series with many predictors
 Version: 0.0.0.9000
 Depends:
-    R (>= 3.3.1)
+    R (>= 3.3.2)
 Authors@R: person("Till", "Weigt", email = "till_weigt@yahoo.de",
   role = c("aut", "cre"))
 Maintainer: Till Weigt <till_weigt@yahoo.de>
@@ -12,3 +12,7 @@ License: GPL-2
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 5.0.1
+Imports:
+  stats,
+  utils (>= 2.5.0)
+

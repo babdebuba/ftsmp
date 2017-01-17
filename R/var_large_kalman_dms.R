@@ -10,6 +10,8 @@ yraw <- cbind(1:3, 11:13)
 
 # the model is yy_t = zz_t %*% beta_predict_t + error_t
 
+# model building
+# {
 # build the variables of the model
 # determine the lag length pp and the forecast horion hh
 pp <- 1
@@ -38,11 +40,10 @@ tt <- yy_rows_number
 gg <- c(1:2)
 kk <- c(1:2)
 ll <- c(1:2)
-ff <- c(1:2)
 gg_length <- length(gg)
 kk_length <- length(kk)
 ll_length <- length(ll)
-ff_length <- length(ff)
+model_number <- gg_length * kk_length * ll_length
 
 # build the variables
 #
@@ -55,8 +56,7 @@ beta_predict_expectation <- array(0, dim = c(tt,
                                             zz_rows_number,
                                             gg_length,
                                             kk_length,
-                                            ll_length,
-                                            ff_length))
+                                            ll_length))
 beta_update_expectation <- beta_predict_expectation
 
 # build the variables
@@ -70,13 +70,15 @@ beta_predict_variance <- array(0, dim = c(zz_rows_number,
 beta_update_variance <- beta_predict_variance
 
 # build the variables
-# yy_predict_expectation, yy_predict_variance and yy_update_variance
+# yy_predict_expectation, y_prediction_error,
+# yy_predict_variance, yy_update_variance
 yy_predict_expectation <- array(0, dim = c(tt,
                                           dd,
                                           gg_length,
                                           kk_length,
                                           ll_length,
                                           ff_length))
+yy_predict_error_expectation <- yy_predict_expectation
 yy_predict_variance <- array(0, dim = c(dd,
                                         dd,
                                         gg_length,
@@ -91,7 +93,9 @@ model_probability_predict <- array(0, dim = c(tt,
                                               gg_length * kk_length *
                                               ll_length * ff_length))
 model_probability_update <- model_probability_predict
-
+}
+# prior setting
+{
 # pior
 # beta_update_variance
 prior_constant_variance <- 10
@@ -124,3 +128,71 @@ yy_update_variance <- structure(apply(
 # prior
 # prior model_probability_predict
 model_probability_predict[1, ] <- 1 / dim(model_probability_predict)[2]
+}
+
+# kalman filter
+# progressbar <- utils::txtProgressBar(min = 0, max = tt, style = 3)
+# for (t in 2:(tt + 1)) {
+#   utils::setTxtProgressBar(pb = progressbar, value = t)
+t = 2
+  # kalman filter prediction
+  # beta prediction
+  beta_predict_expectation[t, , , , , ] <- beta_update_expectation[t, , , , , ]
+  for (l in seq_len(ll_length)) {
+    beta_predict_variance[, , , , l, ] <- beta_update_variance[, , , , l, ] /
+                                          ll[l]
+  }
+  # beta_predict_variance <- structure(sapply(
+  #   seq_len(ll_length),
+  #   FUN = function(x, y, z) y[, , , , x, ] / z[x],
+  #   y = beta_update_variance,
+  #   z = ll),
+  # dim = dim(beta_update_variance))
+  # kalman filter prediction
+  # yy prediction
+  yy_predict_expectation[t, , , , , ] <- structure(apply(
+      beta_predict_expectation[t, , , , , ],
+      MARGIN = 2:5,
+      FUN = function(x) zz[((t - 2) * dd + 1):((t - 1) * dd), ] %*%
+                        x),
+    dim = dim(yy_predict_expectation[t, , , , , ]))
+  yy_predict_error_expectation[t, , , , ,] <- structure(apply(
+      yy_predict_expectation[t, , , , , ],
+      MARGIN = 2:5,
+      FUN = function(x) x - yy[t, ]),
+    dim = dim(yy_predict_error_expectation[t, , , , , ]))
+  yy_predict_error_variance <- structure(apply(
+    yy_predict_error_expectation[t, , , , , ],
+    MARGIN = 2:5,
+    FUN = function(x) x %*% t(x)),
+    dim = c(dd, dd, gg_length, kk_length, ll_length, ff_length))
+  # this is the shorer version of koop and korobilis compared to raftery's original
+  for (i in seq_len(kk_length)) {
+    yy_update_variance[, , , i, , ] <- yy_update_variance[, , , i, , ] * kk[i] +
+                                      yy_predict_error_variance[, , , i, , ] * (1 - kk[i])
+  }
+  yy_predict_variance <- structure(apply(
+      beta_predict_variance,
+      MARGIN = 3:6,
+      FUN = function(x) zz[((t - 2) * dd + 1):((t - 1) * dd), ] %*% x %*%
+                        t(zz[((t - 2) * dd + 1):((t - 1) * dd), ])),
+    dim = dim(yy_predict_variance))
+  yy_predict_variance <- yy_predict_variance + yy_update_variance
+  # kalman filter update
+  yy_predict_variance_inverse <- structure(apply(
+      yy_predict_variance,
+      MARGIN = 3:6,
+      FUN = solve),
+    dim = dim(yy_predict_variance))
+  temp <- structure(apply(
+      yy_predict_variance_inverse,
+      MARGIN = 3:6,
+      FUN = function(x) t(zz[((t - 2) * dd + 1):((t - 1) * dd), ]) %*% x),
+    dim = c(zz_rows_number, dd, gg_length, kk_length, ll_length, ff_length))
+  temp <- structure(apply(
+      temp,
+      MARGIN = 3:6,
+      FUN = function(x) ),
+    dim = )
+# }
+# close(progressbar)
