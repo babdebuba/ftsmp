@@ -10,11 +10,12 @@ model_initialize <- function(yraw, pp, hh,
   yy_cov <- stats::cov(yy)
   tt <- dim(yy)[1]  # length of the time series
   zz <- zz_build(yraw, pp, hh, dd, tt)  # build the variable zz
-  zz_rows_number <- dim(zz)[1]  # number of rows of zz
   zz_cols_number <- dim(zz)[2]  # number of cols of zz
   # add unused NA rows for the prior at point in time 1
   yy <- rbind(rep(NA, dd), yy)
   zz <- rbind(matrix(NA, nrow = dd, ncol = zz_cols_number), zz)
+
+  tt <- tt + 1
 
   # build beta_predict_expectation and beta_update_variance
   beta_update_expectation <- array(0, dim = c(tt,
@@ -36,12 +37,16 @@ model_initialize <- function(yraw, pp, hh,
   yy_predict_error_expectation <- yy_predict_expectation
   yy_predict_error_variance <- array(NA, dim = c(dd, dd))
   yy_update_variance <- kk * yy_cov
+  # # build model_probability_predict and
+  # # model_probability_update
+  # model_probability_predict <- array(0, dim = c(tt,
+  #   gg_length * kk_length *
+  #     ll_length * ff_length))
+  # model_probability_update <- model_probability_predict
 
   list(
     dd = dd, hh = hh, pp = pp,
     tt = tt, yy = yy, yraw = yraw, zz = zz,
-    zz_cols_number = zz_cols_number,
-    zz_rows_number = zz_rows_number,
     beta_predict_expectation = beta_predict_expectation,
     beta_predict_variance = beta_predict_variance,
     beta_update_expectation = beta_update_expectation,

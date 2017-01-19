@@ -14,5 +14,6 @@ LazyData: true
 RoxygenNote: 5.0.1
 Imports:
   stats,
-  utils (>= 2.5.0)
+  utils (>= 2.5.0),
+  mvtnorm (>= 1.0-5)
 
