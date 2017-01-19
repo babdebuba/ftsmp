@@ -5,13 +5,16 @@ model_initialize <- function(yraw, pp, hh,
 
   # build the variables of the model
   dd <- dim(yraw)[2] # dimension of the time series
-  yy <- yraw[(pp + hh):nrow(yraw), ] # time series shifted due to pp and hh
+  yy <- yraw[(pp + hh):nrow(yraw), ] # time series shifted due
+                                     # to pp and hh
   tt <- dim(yy)[1] # length of the time series
   zz <- zz_build(yraw, pp, hh, dd, tt) # build the variable zz
   zz_cols_number <- dim(zz)[1] # number of rows of zz
   zz_rows_number <- dim(zz)[2] # number of cols of zz
 
   # build beta_predict_expectation and beta_update_variance
+  tt <- tt + 1 # the first entry is reserved for the prior
+               # at point in time 0
   beta_update_expectation <- array(0, dim = c(tt,
     zz_rows_number))
   beta_predict_expectation <- beta_update_expectation
