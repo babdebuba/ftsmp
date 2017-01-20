@@ -1,22 +1,7 @@
-kalman_filter <- function(pp = 1, hh = 1,
+kalman_filter <- function(yraw, pp = 1, hh = 1,
                           prior_constant_variance = 10,
                           gg = .1, kk = 1, ll = 1,
-                          density_size = 1) { # function(yraw, pp, hh, prior_constant_variance, gg, kk, ll)
-
-# only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!
-yraw <- cbind(1:3, 11:13) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# yraw <- MTS::VARMAsim(nobs = 100, arlags = 1,
-#   phi = matrix(c(0.2, -0.6, 0.3, 1), 2, 2),
-#   sigma = matrix(c(4, 0.8, 0.8, 1), 2, 2))$series
-# pp = 1
-# hh = 1
-# prior_constant_variance = 10
-# gg = .1
-# kk = 1
-# ll = 1
-# t = 2
-# density_size = 1
-
+                          density_size = 1) {
 # initialize the model ---------------------------------------
 model <- model_initialize(yraw, pp, hh,
   prior_constant_variance, gg, kk, ll, density_size)
