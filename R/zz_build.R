@@ -1,7 +1,11 @@
 # build the variable zz of the overall model
-zz_build <- function(yraw, pp, hh, dd, tt) {
+zz_build <- function(yraw, pp, hh, dd, tt, predictor) {
   zz <- stats::embed(yraw, pp)
-  zz <- zz[1:(dim(zz)[1] - hh), ]
+  if (predictor == 0) {
+    zz <- zz[1:(dim(zz)[1] - hh), ]
+  } else {
+    zz <- zz[-(1:hh), ]
+  }
   zz <- cbind(diag(dd) %x% zz)
   temp <- zz
   for (i in 1:tt) {
