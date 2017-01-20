@@ -26,7 +26,7 @@ model_ensemble <- function(gg = .1, kk = 1, ll = 1) {
     .packages = "ftsmp") %dopar%
     do.call(kalman_filter, models[[i]])
 
-  stopCluster(cl)
+  parallel::stopCluster(cl)
 
   models
 }
