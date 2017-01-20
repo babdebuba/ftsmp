@@ -19,14 +19,14 @@ model_ensemble <- function(gg = .1, kk = 1, ll = 1) {
       kk = model_parameter[i, 2], ll = model_parameter[i, 3])
   }
 
-  # cl <- parallel::makeCluster(2)
-  # doParallel::registerDoParallel(cl)
+  cl <- parallel::makeCluster(2)
+  doParallel::registerDoParallel(cl)
 
   models <- foreach::foreach(i = 1:length(models),
-    .packages = "ftsmp") %do%
+    .packages = "ftsmp") %dopar%
     do.call(kalman_filter, models[[i]])
 
-  # stopCluster(cl)
+  stopCluster(cl)
 
   models
 }
