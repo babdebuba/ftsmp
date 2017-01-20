@@ -1,4 +1,5 @@
 #' @export
+#' @import foreach
 model_ensemble <- function(gg = .1, kk = 1, ll = 1,
   cores_number = 1) {
 
