@@ -15,5 +15,7 @@ RoxygenNote: 5.0.1
 Imports:
   stats,
   utils (>= 2.5.0),
-  mvtnorm (>= 1.0-5)
+  mvtnorm (>= 1.0-5),
+  doParallel (>= 1.0.10),
+  foreach (>= 1.4.3)
 
