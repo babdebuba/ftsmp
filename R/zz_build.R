@@ -1,4 +1,3 @@
-#' @export
 # build the variable zz of the overall model
 zz_build <- function(yraw, pp, hh, dd, tt, predictor) {
   zz <- stats::embed(yraw, pp)

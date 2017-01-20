@@ -1,4 +1,3 @@
-# #' @export
 kalman_filter <- function(yraw, pp = 1, hh = 1,
                           prior_constant_variance = 10,
                           gg = .1, kk = 1, ll = 1,

@@ -1,4 +1,3 @@
-#' @export
 # model building function for the model yy = zz * beta -----------------------
 model_initialize <- function(yraw, pp, hh,
                              prior_constant_variance,
