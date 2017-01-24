@@ -1,7 +1,7 @@
-kalman_filter <- function(yraw, pp = 1, hh = 1,
+kalman_filter <- function(yraw, pp = 3, hh = 1,
                           prior_constant_variance = 10,
                           gg = .1, kk = 1, ll = 1,
-                          density_size = 1) {
+                          density_size = 1000) {
 # initialize the model ---------------------------------------
 model <- model_initialize(yraw, pp, hh,
   prior_constant_variance, gg, kk, ll, density_size)
@@ -28,11 +28,11 @@ yy_predict_error_expectation <-
   model$yy_predict_error_expectation
 yy_predict_error_variance <- model$yy_predict_error_variance
 yy_update_variance <- model$yy_update_variance
-model_probability_predict <- model$model_probability_predict
+yy_probability_predict <- model$yy_probability_predict
 yy_predict_density <- model$yy_predict_density
 }
 
-# kalman filter ----------------------------------------------
+# kalman filter ---------------------------------------------
 # progressbar <- utils::txtProgressBar(min = 0, max = tt - 1,
 #   style = 3)
 for (t in 2:tt) {
@@ -79,8 +79,8 @@ for (t in 2:tt) {
     beta_predict_variance %*% t(zz[zz_t_index, ]) %*%
     yy_predict_variance_inverse %*% zz[zz_t_index, ] %*%
     beta_predict_variance
-  # model_probability_predict
-  model_probability_predict[t] <- mvtnorm::dmvnorm(
+  # yy_probability_predict
+  yy_probability_predict[t] <- mvtnorm::dmvnorm(
     x = yy[t, ], mean = yy_predict_expectation[t, ],
     sigma = yy_predict_variance)
 }
@@ -94,8 +94,8 @@ yy_predict_density <- mvtnorm::rmvnorm(
 # close(progressbar)
 
 list(
-  model_probability_predict = model_probability_predict,
+  yy_probability_predict = yy_probability_predict,
   yy_predict = yy_predict,
-  yy_predict_density = yy_predict_density
-)
+  yy_predict_density = yy_predict_density,
+  tt = tt, dd = dd)
 }
