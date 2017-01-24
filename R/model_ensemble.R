@@ -1,11 +1,13 @@
 #' @export
 #' @import foreach
-# #' @param gg prior parameter
-# #' @param kk observe variance parameter
-# #' @param ll state variance parameter
-# #' @param cores_number define the number of cores
-# #' @examples model_ensemble()
-# #' @return the return
+#' @description this is the description
+#' @title main function
+#' @param gg prior parameter
+#' @param kk observe variance parameter
+#' @param ll state variance parameter
+#' @param cores_number define the number of cores
+#' @examples model_ensemble()
+#' @return the return
 model_ensemble <- function(gg = .1, kk = 1, ll = 1,
   cores_number = 1) {
 
