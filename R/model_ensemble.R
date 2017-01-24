@@ -112,6 +112,6 @@ model_ensemble <- function(gg = .1, kk = 1, ll = 1,
     apply(yy_predict[, model_sort_2[1:sub, 2]] *
     model_probability_predict_sub[tt, ], 1, mean),
   apply(yy_predict_density[, , model_sort_2[1:sub, 2]] *
-    model_probability_predict_sub[tt, ], 1, mean)
+    model_probability_predict_sub[tt, ], 1:2, mean)
   )
 }
