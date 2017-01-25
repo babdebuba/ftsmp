@@ -13,10 +13,14 @@ model_ensemble <- function(gg = .1, kk = 1, ll = 1,
 
 # only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!
 {  # yraw <- cbind(1:3, 11:13) #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  yraw <- MTS::VARMAsim(nobs = 100, arlags = 1,
-    phi = matrix(c(0.2, -0.6, 0.3, 1), 2, 2),
-    sigma = matrix(c(4, 0.8, 0.8, 1), 2, 2))$series
-  gg <- seq(.0001, .01, length.out = 2)
+  set.seed(34)
+  yraw <- MTS::VARMAsim(nobs = 1000, arlags = 1,
+    phi = matrix(c(.9, 0, 0, .9), nrow = 2),
+    sigma = matrix(c(.01, 0, 0, .01), 2, 2))$series
+  yf <- yraw[dim(yraw)[1], ]
+  # yraw <- yraw[-dim(yraw)[1], ]
+  # mts <- MTS::VARpred(MTS::VAR(yraw, p = 2))$pred
+  gg <- seq(.0001, .1, length.out = 2)
   kk <- seq(.8, 1, length.out = 2)
   ll <- seq(.8, 1, length.out = 2)
   cores_number <- 1
@@ -59,7 +63,7 @@ model_ensemble <- function(gg = .1, kk = 1, ll = 1,
     yy_predict_density[, , i] <- models[[i]]$yy_predict_density
   }
 
-  sub <- 2
+  sub <- 1
   # build model_probability_predict,
   # model_pobability_update and model_sort
   model_probability_update <- array(NA, dim = c(tt,
@@ -72,7 +76,7 @@ model_ensemble <- function(gg = .1, kk = 1, ll = 1,
   #   model_probability_predict[2, ], index.return = T,
   #   decreasing = T)))
   model_probability_predict_sub <-
-    model_probability_predict[, 1:sub]
+    as.matrix(model_probability_predict[, 1:sub])
 
   alpha <- 1
   # calculate model_probaility_predict
@@ -109,9 +113,13 @@ model_ensemble <- function(gg = .1, kk = 1, ll = 1,
       temp_predict_sub
   }
   list(
-    apply(yy_predict[, model_sort_2[1:sub, 2]] *
-    model_probability_predict_sub[tt, ], 1, mean),
-  apply(yy_predict_density[, , model_sort_2[1:sub, 2]] *
-    model_probability_predict_sub[tt, ], 1:2, mean)
+    apply(as.matrix(yy_predict[, model_sort_2[1:sub, 2]] *
+        model_probability_predict_sub[t, ]), 1, sum),
+    apply(yy_predict_density[, , model_sort_2[1:sub, 2]] *
+        model_probability_predict_sub[tt, ], 1:2, sum),
+    yf
+    # yy_predict,
+    # mts,
+    # models[[8]]$beta_update_expectation[dim(yraw)[1] - 1, ]
   )
 }

@@ -1,4 +1,4 @@
-kalman_filter <- function(yraw, pp = 3, hh = 1,
+kalman_filter <- function(yraw, pp = 1, hh = 1,
                           prior_constant_variance = 10,
                           gg = .1, kk = 1, ll = 1,
                           density_size = 1000) {
@@ -97,5 +97,6 @@ list(
   yy_probability_predict = yy_probability_predict,
   yy_predict = yy_predict,
   yy_predict_density = yy_predict_density,
-  tt = tt, dd = dd)
+  tt = tt, dd = dd,
+  beta_update_expectation = beta_update_expectation)
 }
