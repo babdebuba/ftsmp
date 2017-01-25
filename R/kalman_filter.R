@@ -35,7 +35,7 @@ yy_predict_density <- model$yy_predict_density
 # kalman filter ---------------------------------------------
 # progressbar <- utils::txtProgressBar(min = 0, max = tt - 1,
 #   style = 3)
-for (t in 2:tt) {
+for (t in (2 + pp - 1):tt) {
   # utils::setTxtProgressBar(pb = progressbar, value = t)
   # shift set minus 1 due to the prior at point in time 1
   zz_t_index <- (t * dd - dd + 1):(t * dd)

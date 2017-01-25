@@ -5,8 +5,8 @@ model_initialize <- function(yraw, pp, hh,
 
   # build the variables of the model
   dd <- dim(yraw)[2]  # dimension of the time series
-  yy <- yraw[(pp + hh):nrow(yraw), ]  # time series shifted
-                                      # due to pp and hh
+  # time series shifted due to pp and hh
+  yy <- yraw[(pp + hh):nrow(yraw), ]
   yy_cov <- stats::cov(yy)
   tt <- dim(yy)[1]  # length of the time series
   # build the variable zz
@@ -14,12 +14,14 @@ model_initialize <- function(yraw, pp, hh,
   zz_predictor <- zz_build(yraw, pp, hh, dd, tt, predictor = 1)
   zz_cols_number <- dim(zz)[2]  # number of cols of zz
   # add unused NA rows for the prior at point in time 1
-  yy <- rbind(rep(NA, dd), yy)
-  zz <- rbind(matrix(NA, nrow = dd, ncol = zz_cols_number), zz)
-  zz_predictor <- rbind(matrix(NA, nrow = dd,
+  # and for the lag p
+  yy <- rbind(array(NA, dim = c(pp, dd)), yy)
+  zz <- rbind(matrix(NA, nrow = dd * pp, ncol = zz_cols_number),
+    zz)
+  zz_predictor <- rbind(matrix(NA, nrow = dd * pp,
     ncol = zz_cols_number), zz_predictor)
 
-  tt <- tt + 1
+  tt <- tt + pp
 
   # build beta_predict_expectation and beta_update_variance
   beta_update_expectation <- array(0, dim = c(tt,
