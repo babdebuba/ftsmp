@@ -4,14 +4,21 @@
 \alias{model_ensemble}
 \title{main function}
 \usage{
-model_ensemble(gg = 0.1, kk = 1, ll = 1, cores_number = 1)
+model_ensemble(yraw = NULL, gg = 0.1, kk = 1, ll = 1, pp = 1,
+  dimension = NULL, cores_number = 1)
 }
 \arguments{
+\item{yraw}{the data}
+
 \item{gg}{prior parameter}
 
 \item{kk}{observe variance parameter}
 
 \item{ll}{state variance parameter}
+
+\item{pp}{number of lags}
+
+\item{dimension}{the first variables to predict}
 
 \item{cores_number}{define the number of cores}
 }
@@ -20,8 +27,5 @@ the return
 }
 \description{
 this is the description
-}
-\examples{
-model_ensemble()
 }
 

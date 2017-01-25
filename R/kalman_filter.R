@@ -1,7 +1,8 @@
 kalman_filter <- function(yraw, pp = 1, hh = 1,
                           prior_constant_variance = 10,
                           gg = .1, kk = 1, ll = 1,
-                          density_size = 1000) {
+                          density_size = 1000,
+                          dimension) {
 # initialize the model ---------------------------------------
 model <- model_initialize(yraw, pp, hh,
   prior_constant_variance, gg, kk, ll, density_size)
@@ -81,8 +82,9 @@ for (t in (2 + pp - 1):tt) {
     beta_predict_variance
   # yy_probability_predict
   yy_probability_predict[t] <- mvtnorm::dmvnorm(
-    x = yy[t, ], mean = yy_predict_expectation[t, ],
-    sigma = yy_predict_variance)
+    x = yy[t, 1:dimension],
+    mean = yy_predict_expectation[t, 1:dimension],
+    sigma = yy_predict_variance[1:dimension, 1:dimension])
 }
 # yy_predict
 yy_predict <- t(zz_predictor[zz_t_index, ] %*%
