@@ -11,7 +11,7 @@
 #' @return the return
 model_ensemble <- function(yraw, gg = .1, kk = 1, ll = 1,
                            pp = 1, dimension,
-                           cores_number = 1) {
+                           cores_number = 4) {
 
 # only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
@@ -105,8 +105,10 @@ alpha <- 1
         model_sort_2[1:sub, 2]] ^ alpha + offset)
   }
   list(
+    model_probability_predict_sub_aggregate =
       apply(model_probability_predict_sub_not_normalized,
         1, mean),
+    yy_predict_sub_aggregate =
       apply(as.matrix(yy_predict[1:dimension,
         model_sort_2[1:sub, 2]] *
         model_probability_predict_sub[t, ]), 1, sum)
