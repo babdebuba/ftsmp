@@ -5,7 +5,7 @@
 \title{main function}
 \usage{
 model_ensemble(yraw, gg = 0.1, kk = 1, ll = 1, pp = 1, dimension,
-  cores_number = 4)
+  alpha = 1, cores_number = 4)
 }
 \arguments{
 \item{gg}{prior parameter}
@@ -23,8 +23,5 @@ the return
 }
 \description{
 this is the description
-}
-\examples{
-model_ensemble()
 }
 

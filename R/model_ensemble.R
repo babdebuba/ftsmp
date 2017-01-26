@@ -7,11 +7,10 @@
 #' @param ll state variance parameter
 #' @param pp number of lags
 #' @param cores_number define the number of cores
-#' @examples model_ensemble()
 #' @return the return
 model_ensemble <- function(yraw, gg = .1, kk = 1, ll = 1,
-                           pp = 1, dimension,
-                           cores_number = 1) {
+                           pp = 1, dimension, alpha = 1,
+                           cores_number = 4) {
 
 # only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
@@ -20,10 +19,10 @@ model_ensemble <- function(yraw, gg = .1, kk = 1, ll = 1,
   kk <- seq(.8, 1, length.out = 2)
   ll <- seq(.8, 1, length.out = 2)
   pp <- seq(1, 2, 1)
-  cores_number <- 1
+  cores_number <- 4
 }
 sub <- 4
-alpha <- 1
+# alpha <- 1
 
   # set all parameter combinations (models)
   model_parameter <- expand.grid(gg = gg, kk = kk, ll = ll,
