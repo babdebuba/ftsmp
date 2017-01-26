@@ -11,7 +11,7 @@
 #' @return the return
 model_ensemble <- function(yraw, gg = .1, kk = 1, ll = 1,
                            pp = 1, dimension,
-                           cores_number = 4) {
+                           cores_number = 1) {
 
 # only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
@@ -40,7 +40,7 @@ alpha <- 1
   cl <- parallel::makeCluster(cores_number)
   doParallel::registerDoParallel(cl)
   models <- foreach::foreach(i = 1:length(models),
-    .packages = "ftsmp") %do%
+    .packages = "ftsmp") %dopar%
     do.call(kalman_filter, models[[i]])
   parallel::stopCluster(cl)
 
@@ -92,7 +92,7 @@ alpha <- 1
       temp_predict
     model_sort_2 <- as.matrix(as.data.frame(sort.int(
       model_probability_predict[t, ], index.return = T
-      ,decreasing = T)))
+      , decreasing = T)))
     temp_predict_sub <-
       sum(model_probability_update[t - 1,
         model_sort_2[1:sub, 2]] ^ alpha + offset)
