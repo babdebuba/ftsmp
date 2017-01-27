@@ -1,28 +1,8 @@
-#' @export
-#' @import foreach
-#' @description this is the description
-#' @title main function
-#' @param gg prior parameter
-#' @param kk observe variance parameter
-#' @param ll state variance parameter
-#' @param pp number of lags
-#' @param cores_number define the number of cores
-#' @return the return
-model_ensemble <- function(yraw, gg = .1, kk = 1, ll = 1,
-                           pp = 1, dimension, alpha = 1,
-                           cores_number = 4) {
-
-# only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-{
-  set.seed(34)
-  gg <- seq(.0001, .1, length.out = 2)
-  kk <- seq(.8, 1, length.out = 2)
-  ll <- seq(.8, 1, length.out = 2)
-  pp <- seq(1, 2, 1)
-  cores_number <- 4
-}
-sub <- 4
-# alpha <- 1
+model_ensemble <- function(yraw, gg, kk, ll,
+                           pp, dimension, alpha,
+                           cores_number, hh,
+                           prior_constant_variance,
+                           density_size, sub) {
 
   # set all parameter combinations (models)
   model_parameter <- expand.grid(gg = gg, kk = kk, ll = ll,
@@ -31,8 +11,8 @@ sub <- 4
   for (i in 1:dim(model_parameter)[1]) {
     models[[i]] <- list(yraw, gg = model_parameter[i, 1],
       kk = model_parameter[i, 2], ll = model_parameter[i, 3],
-      pp = model_parameter[i, 4],
-      dimension = dimension)
+      pp = model_parameter[i, 4], dimension = dimension, hh,
+      prior_constant_variance, density_size)
   }
 
   # calculate the forecasts of every model
@@ -56,7 +36,6 @@ sub <- 4
   yy_predict <- array(NA, dim = c(dd, model_number))
   yy_predict_density <- array(NA, dim = c(dd, density_size,
     model_number))
-
   for (i in 1:model_number) {
     yy_probability_predict[, i] <-
       models[[i]]$yy_probability_predict
@@ -103,6 +82,7 @@ sub <- 4
       (model_probability_update[t - 1,
         model_sort_2[1:sub, 2]] ^ alpha + offset)
   }
+
   list(
     model_probability_predict_sub_aggregate =
       apply(model_probability_predict_sub_not_normalized,
@@ -110,12 +90,10 @@ sub <- 4
     yy_predict_sub_aggregate =
       apply(as.matrix(yy_predict[1:dimension,
         model_sort_2[1:sub, 2]] *
-        model_probability_predict_sub[t, ]), 1, sum)
-    # apply(yy_predict_density[, , model_sort_2[1:sub, 2]] *
-    #     model_probability_predict_sub[tt, ], 1:2, sum),
-    # yf
-    # yy_predict,
-    # mts,
-    # models[[8]]$beta_update_expectation[dim(yraw)[1] - 1, ]
+        model_probability_predict_sub[t, ]), 1, sum),
+    # yy_predict_density_sub_aggregate = apply(yy_predict_density[, ,
+    #   model_sort_2[1:sub, 2]] *
+    #     model_probability_predict_sub[t, ], 1:2, sum),
+    tt = tt
   )
 }

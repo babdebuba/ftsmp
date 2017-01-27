@@ -1,23 +1,45 @@
-dimension_ensemble <- function() {
+#' @export
+#' @import foreach
+#' @description forecast using dms
+#' @title model ensemble
+#' @param yraw data
+#' @param alpha forgetting factor
+#' @param gg state variance
+#' @param kk observation variance
+#' @param ll prior parameter
+#' @param pp lags
+#' @param cores_number number of parallel cores
+#' @param hh forecast horizon
+#' @param prior_constant_variance expecttaion prior choice
+#' @param density_size density_size
+#' @param sub sub models for dms
+#' @param dimensions variable to forecast
+#' @return forecasts and probability of the models
+# #' @example
+# #' parameter <- matrix(cbind(1:10, 11:20), 2),
+# #' rep(1, 10)
+# #' dimension_ensemble(parameter)
+dimension_ensemble <- function(yraw, alpha, gg, kk, ll,
+                              pp,
+                              cores_number, hh,
+                              prior_constant_variance,
+                              density_size, sub,
+                              dimensions) {
 
-  # only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  yraw <- MTS::VARMAsim(nobs = 1000, arlags = 1,
-    phi = matrix(.9 * diag(4), nrow = 4),
-    sigma = matrix(.1 * diag(4), nrow = 4))$series
-
-  tt <- dim(yraw)[1]
-
-  alpha <- seq(.8, 1, length.out = 4)
-
-  dimensions <- list(1:2, 1:3, 1:4)
   models <- dimensions
   dimension_model <- length(dimensions[[1]])
   dimension_number <- length(dimensions)
-  for (i in 1:length(dimensions)) {
+  for (i in 1:dimension_number) {
     models[[i]] <- model_ensemble_forgetting(
       yraw = yraw[, dimensions[[i]]],
-      dimension = dimension_model, alpha = alpha)
+      dimension = dimension_model, alpha,
+      gg, kk, ll,
+      pp,
+      cores_number, hh,
+      prior_constant_variance,
+      density_size, sub)
   }
+  tt <- models[[1]]$tt
 
   # reshape yy_predict_alpha_max and
   # alpha_probability_predict_max

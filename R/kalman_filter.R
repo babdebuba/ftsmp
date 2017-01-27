@@ -1,8 +1,9 @@
-kalman_filter <- function(yraw, pp = 1, hh = 1,
-                          prior_constant_variance = 10,
-                          gg = .1, kk = 1, ll = 1,
-                          density_size = 1000,
+kalman_filter <- function(yraw, pp, hh,
+                          prior_constant_variance,
+                          gg, kk, ll,
+                          density_size,
                           dimension) {
+
 # initialize the model ---------------------------------------
 model <- model_initialize(yraw, pp, hh,
   prior_constant_variance, gg, kk, ll, density_size)
@@ -83,6 +84,8 @@ for (t in (2 + pp - 1):tt) {
     mean = yy_predict_expectation[t, 1:dimension],
     sigma = yy_predict_variance[1:dimension, 1:dimension])
 }
+
+# one step ahead prediction ---------------------------------
 # yy_predict
 yy_predict <- t(zz_predictor[zz_t_index, ] %*%
   beta_update_expectation[t, ])
@@ -95,6 +98,5 @@ list(
   yy_probability_predict = yy_probability_predict,
   yy_predict = yy_predict,
   yy_predict_density = yy_predict_density,
-  tt = tt, dd = dd,
-  beta_update_expectation = beta_update_expectation)
+  tt = tt, dd = dd)
 }

@@ -1,24 +1,21 @@
-model_ensemble_forgetting <- function(yraw, dimension_model,
-                                      alpha) {
-  # only temporary for developemnet !!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  # yraw <- MTS::VARMAsim(nobs = 1000, arlags = 1,
-  #   phi = matrix(.9 * diag(4), nrow = 4),
-  #   sigma = matrix(.1 * diag(4), nrow = 4))$series
-  # yraw <- yraw[, 1:2]
-  # dimension_model <- length(dimensions[[1]])
+model_ensemble_forgetting <- function(yraw,
+                                      alpha, gg, kk, ll,
+                                      pp, dimension,
+                                      cores_number, hh,
+                                      prior_constant_variance,
+                                      density_size, sub) {
 
-  tt <- dim(yraw)[1]
-
-  # alpha <- seq(.8, 1, length.out = 4)
   alpha_length <- length(alpha)
   models <- rep(list(""), alpha_length)
   for (i in 1:alpha_length) {
     models[[i]] <- model_ensemble(
-      yraw,
-      dimension = dimension_model, alpha = alpha[i])
+      yraw, alpha = alpha[i],
+      gg, kk, ll, pp, dimension, cores_number, hh,
+      prior_constant_variance, density_size, sub)
   }
+  tt <- models[[1]]$tt
   # reshape yy_predict_sub_aggregate and yy_predict_aggregate
-  yy_predict_sub_aggregate <- array(NA, dim = c(dimension_model,
+  yy_predict_sub_aggregate <- array(NA, dim = c(dimension,
     alpha_length))
   model_probability_predict_sub_aggregate <- array(NA,
     dim = c(tt, alpha_length))
@@ -58,6 +55,7 @@ model_ensemble_forgetting <- function(yraw, dimension_model,
     alpha_probability_predict_max =
       alpha_probability_predict_max,
     alpha_probability_predict_average =
-      alpha_probability_predict_average
+      alpha_probability_predict_average,
+    tt = tt
   )
 }

@@ -3,7 +3,7 @@ model_initialize <- function(yraw, pp, hh,
                              prior_constant_variance,
                              gg, kk, ll, density_size) {
 
-  # build the variables of the model
+  # build the target variable and the predictor variables
   dd <- dim(yraw)[2]  # dimension of the time series
   # time series shifted due to pp and hh
   yy <- yraw[(pp + hh):nrow(yraw), ]
@@ -20,7 +20,7 @@ model_initialize <- function(yraw, pp, hh,
     zz)
   zz_predictor <- rbind(matrix(NA, nrow = dd * pp,
     ncol = zz_cols_number), zz_predictor)
-
+  #
   tt <- tt + pp
 
   # build beta_predict_expectation and beta_update_variance
@@ -47,8 +47,10 @@ model_initialize <- function(yraw, pp, hh,
   yy_predict_error_expectation <- yy_predict_expectation
   yy_predict_error_variance <- array(NA, dim = c(dd, dd))
   yy_update_variance <- kk * yy_cov
+
   # build yy_probability_predict
   yy_probability_predict <- rep(NA, length = tt)
+
   # build yy_predict_density
   yy_predict_density <- array(NA, dim = c(tt, dd,
     density_size))
