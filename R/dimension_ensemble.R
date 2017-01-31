@@ -27,14 +27,13 @@ dimension_ensemble <- function(yraw, alpha, gg, kk, ll,
                               dimensions) {
 
   models <- dimensions
-  dimension_model <- length(dimensions[[1]])
+  dimension <- length(dimensions[[1]])
   dimension_number <- length(dimensions)
   for (i in 1:dimension_number) {
     models[[i]] <- model_ensemble_forgetting(
-      yraw = yraw[, dimensions[[i]]],
-      dimension = dimension_model, alpha,
+      yraw = yraw[, dimensions[[i]]], alpha,
       gg, kk, ll,
-      pp,
+      pp, dimension,
       cores_number, hh,
       prior_constant_variance,
       density_size, sub)
@@ -43,44 +42,71 @@ dimension_ensemble <- function(yraw, alpha, gg, kk, ll,
 
   # reshape yy_predict_alpha_max and
   # alpha_probability_predict_max
-  yy_predict_alpha_max <- array(NA, dim = c(dimension_model,
+  yy_predict_alpha_max <- array(NA, dim = c(dimension, 1,
     dimension_number))
   alpha_probability_predict_max <- array(NA,
     dim = c(tt, dimension_number))
   yy_predict_alpha_average <- NA * yy_predict_alpha_max
   alpha_probability_predict_average <- NA *
     alpha_probability_predict_max
+  yy_predict_density_alpha_max <- array(NA,
+    dim = c(dimension, density_size, dimension))
+  yy_predict_density_alpha_average <- NA *
+    yy_predict_density_alpha_max
+
   #
   for (i in 1:dimension_number) {
-    yy_predict_alpha_max[, i] <-
+    yy_predict_alpha_max[, , i] <-
       models[[i]]$yy_predict_alpha_max
     alpha_probability_predict_max[, i] <-
       models[[i]]$alpha_probability_predict_max
-    yy_predict_alpha_average[, i] <-
+    yy_predict_alpha_average[, , i] <-
       models[[i]]$yy_predict_alpha_average
     alpha_probability_predict_average[, i] <-
       models[[i]]$alpha_probability_predict_average
+    yy_predict_density_alpha_max[, , i] <-
+      models[[i]]$yy_predict_density_alpha_max
+    yy_predict_density_alpha_average[, , i] <-
+      models[[i]]$yy_predict_density_alpha_average
   }
 
-  dimension_probability_predict <- NA *
-    alpha_probability_predict_max
-  temp <- apply(alpha_probability_predict_max, 1,
+  temp_max <- apply(alpha_probability_predict_max, 1,
     sum)
-  dimension_probability_predict <-
-    alpha_probability_predict_max / temp
+  temp_average <- apply(alpha_probability_predict_average, 1,
+    sum)
+  dimension_probability_predict_alpha_max <-
+    alpha_probability_predict_max / temp_max
   dimension_probability_predict_max <- apply(
-    dimension_probability_predict, 1, function(x)
+    dimension_probability_predict_alpha_max, 1, function(x)
     sort.int(x, index.return = T, decreasing = T)[[2]][1])
+  dimension_probability_predict_alpha_average <-
+    alpha_probability_predict_average / temp_average
+  dimension_probability_predict_average <- apply(
+    dimension_probability_predict_alpha_average, 1, function(x)
+      sort.int(x, index.return = T, decreasing = T)[[2]][1])
+
   yy_predict_dimension_probability_max <-
-    yy_predict_alpha_max[,
+    yy_predict_alpha_max[, ,
       dimension_probability_predict_max[tt]]
+  yy_predict_density_dimension_probability_max <-
+    yy_predict_density_alpha_max[, ,
+      dimension_probability_predict_max[tt]]
+
   yy_predict_dimension_probability_average <-
-    apply(t(yy_predict_alpha_max) *
-    dimension_probability_predict[tt, ], 2, sum)
+    as.vector(yy_predict_alpha_average[, 1, ] %*%
+    dimension_probability_predict_alpha_average[tt, ])
+  yy_predict_density_dimension_probability_average <-
+    apply(yy_predict_density_alpha_average, 2, function(x)
+      x %*% alpha_probability_predict_average[tt, ])
+
   list(
   yy_predict_dimension_probability_average =
       yy_predict_dimension_probability_average,
   yy_predict_dimension_probability_max =
-      yy_predict_dimension_probability_max
+      yy_predict_dimension_probability_max,
+  yy_predict_density_dimension_probability_average =
+      yy_predict_density_dimension_probability_average,
+  yy_predict_density_dimension_probability_max =
+      yy_predict_density_dimension_probability_max
   )
 }

@@ -19,27 +19,27 @@ model_ensemble <- function(yraw, gg, kk, ll,
   cl <- parallel::makeCluster(cores_number)
   doParallel::registerDoParallel(cl)
   models <- foreach::foreach(i = 1:length(models),
-    .packages = "ftsmp") %dopar%
+    .packages = "ftsmp") %do%
     do.call(kalman_filter, models[[i]])
   parallel::stopCluster(cl)
 
   # set dimensions
   model_number <- dim(model_parameter)[1]
-  dd <- models[[1]]$dd
+  dd <- dim(models[[1]]$yy_predict)[1]
   tt <- models[[1]]$tt
-  density_size <- dim(models[[1]]$yy_predict_density)[1]
+  density_size <- dim(models[[1]]$yy_predict_density)[2]
 
   # reshape yy_probability_predict, yy_predict and
   # yy_predict_density
   yy_probability_predict <- array(NA, dim = c(tt,
     model_number))
-  yy_predict <- array(NA, dim = c(dd, model_number))
+  yy_predict <- array(NA, dim = c(dd, 1, model_number))
   yy_predict_density <- array(NA, dim = c(dd, density_size,
     model_number))
   for (i in 1:model_number) {
     yy_probability_predict[, i] <-
       models[[i]]$yy_probability_predict
-    yy_predict[, i] <- models[[i]]$yy_predict
+    yy_predict[, , i] <- models[[i]]$yy_predict
     yy_predict_density[, , i] <- models[[i]]$yy_predict_density
   }
 
@@ -83,17 +83,19 @@ model_ensemble <- function(yraw, gg, kk, ll,
         model_sort_2[1:sub, 2]] ^ alpha + offset)
   }
 
+  if (dd == 1) temp <- 1 else temp <- 2
+
   list(
-    model_probability_predict_sub_aggregate =
+    model_probability_predict_sub_not_normalized =
       apply(model_probability_predict_sub_not_normalized,
         1, mean),
     yy_predict_sub_aggregate =
-      apply(as.matrix(yy_predict[1:dimension,
-        model_sort_2[1:sub, 2]] *
-        model_probability_predict_sub[t, ]), 1, sum),
-    # yy_predict_density_sub_aggregate = apply(yy_predict_density[, ,
-    #   model_sort_2[1:sub, 2]] *
-    #     model_probability_predict_sub[t, ], 1:2, sum),
+      yy_predict[1:dimension, 1, model_sort_2[1:sub, 2]] %*%
+        model_probability_predict_sub[t, ],
+    yy_predict_density_sub_aggregate =
+      apply(yy_predict_density[1:dimension, ,
+        model_sort_2[1:sub, 2]], temp, function(x)
+          x %*% model_probability_predict_sub[t, ]),
     tt = tt
   )
 }
