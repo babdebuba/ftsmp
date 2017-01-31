@@ -4,9 +4,11 @@ model_initialize <- function(yraw, pp, hh,
                              gg, kk, ll, density_size) {
 
   # build the target variable and the predictor variables
-  dd <- dim(yraw)[2]  # dimension of the time series
+  # dimension of the time series
+  dd <- dim(yraw)[2]
+  tt <- dim(yraw)[1]
   # time series shifted due to pp and hh
-  yy <- yraw[(pp + hh):nrow(yraw), ]
+  yy <- as.matrix(yraw[(pp + hh):tt, ])
   yy_cov <- stats::cov(yy)
   tt <- dim(yy)[1]  # length of the time series
   # build the variable zz
@@ -41,8 +43,7 @@ model_initialize <- function(yraw, pp, hh,
   # yy_update_variance, yy_predict_error_expectation,
   # yy_predict_error_variance, yy_predict_variance_inverse
   yy_predict_expectation <- array(NA, dim = c(tt, dd))
-  yy_predict_variance <- yy_cov + zz[1:dd, ] %*%
-    beta_update_variance %*% t(zz[1:dd, ])
+  yy_predict_variance <- array(NA, dim = c(dd, dd))
   yy_predict_variance_inverse <- NA * yy_predict_variance
   yy_predict_error_expectation <- yy_predict_expectation
   yy_predict_error_variance <- array(NA, dim = c(dd, dd))
