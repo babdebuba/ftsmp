@@ -6,12 +6,6 @@ zz_build <- function(yraw, pp, hh, dd, tt, predictor) {
   } else {
     zz <- zz[-(1:hh), ]
   }
-  zz <- diag(dd) %x% zz
-  temp <- zz
-  for (i in 1:tt) {
-    zz[((i - 1) * dd + 1):(i * dd), ] <- temp[seq(from = i,
-      to = (i - 1) + dd * tt, by = tt), ]
-  }
-  zz <- cbind(t(structure(replicate(tt, diag(dd)),
-    dim = c(dd, tt * dd))), zz)
+  zz <- cbind(1, zz)
+  zz <- array(rep(zz, dd), dim = c(dim(zz)[1], dim(zz)[2] * dd))
 }
