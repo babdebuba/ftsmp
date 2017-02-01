@@ -13,15 +13,15 @@ model_initialize <- function(yraw, pp, hh,
   tt <- dim(yy)[1]  # length of the time series
   # build the variable zz
   zz <- zz_build(yraw, pp, hh, dd, tt, predictor = 0)
-  zz_predictor <- zz_build(yraw, pp, hh, dd, tt, predictor = 1)
+  zz_predictor <- zz_build(yraw, pp, hh, dd, tt,
+    predictor = 1)
   zz_cols_number <- dim(zz)[2]  # number of cols of zz
   # add unused NA rows for the prior at point in time 1
   # and for the lag p
   yy <- rbind(array(NA, dim = c(pp, dd)), yy)
-  zz <- rbind(matrix(NA, nrow = dd * pp, ncol = zz_cols_number),
-    zz)
-  zz_predictor <- rbind(matrix(NA, nrow = dd * pp,
-    ncol = zz_cols_number), zz_predictor)
+  zz <- rbind(array(NA, dim = c(pp, zz_cols_number)), zz)
+  zz_predictor <- rbind(array(NA,
+    dim = c(pp, zz_cols_number)), zz_predictor)
   #
   tt <- tt + pp
 
@@ -31,12 +31,12 @@ model_initialize <- function(yraw, pp, hh,
   beta_predict_expectation <- NA * beta_update_expectation
 
   # build beta_predict_variance and beta_update_variance
-  temp <- rep(1, dd)
+  temp <- 1
   if (pp >= 2) {
-    for (p in 2:pp) temp <- c(temp, rep(gg[1] / p^2, dd))
+    for (p in 2:pp) temp <- c(temp, gg[1] / p^2)
   }
-  beta_update_variance <- diag(c(rep(prior_constant_variance,
-    dd), rep(temp, dd)))
+  temp <- rep(temp, dd)
+  beta_update_variance <- diag(temp)
   beta_predict_variance <- NA * beta_update_variance
 
   # build yy_predict_expectation, yy_predict_variance,
