@@ -55,11 +55,11 @@ model_ensemble_forgetting <- function(yraw,
       alpha_probability_predict_max_index[tt]]
 
   yy_predict_alpha_average <-
-    as.vector(yy_predict_sub_aggregate[, 1, ] %*%
+    as.vector(yy_predict_sub_aggregate[, 1, ] *
         alpha_probability_predict[tt, ])
   yy_predict_density_alpha_average <-
     apply(yy_predict_density_sub_aggregate, 2, function(x)
-        x %*% alpha_probability_predict[tt, ])
+        x * alpha_probability_predict[tt, ])
 
   list(
   yy_predict_alpha_average =

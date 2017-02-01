@@ -93,11 +93,11 @@ dimension_ensemble <- function(yraw, alpha, gg, kk, ll,
       dimension_probability_predict_max[tt]]
 
   yy_predict_dimension_probability_average <-
-    as.vector(yy_predict_alpha_average[, 1, ] %*%
+    as.vector(yy_predict_alpha_average[, 1, ] *
     dimension_probability_predict_alpha_average[tt, ])
   yy_predict_density_dimension_probability_average <-
     apply(yy_predict_density_alpha_average, 2, function(x)
-      x %*% alpha_probability_predict_average[tt, ])
+      x * alpha_probability_predict_average[tt, ])
 
   list(
   yy_predict_dimension_probability_average =

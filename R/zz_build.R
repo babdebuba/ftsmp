@@ -6,7 +6,7 @@ zz_build <- function(yraw, pp, hh, dd, tt, predictor) {
   } else {
     zz <- zz[-(1:hh), ]
   }
-  zz <- cbind(diag(dd) %x% zz)
+  zz <- diag(dd) %x% zz
   temp <- zz
   for (i in 1:tt) {
     zz[((i - 1) * dd + 1):(i * dd), ] <- temp[seq(from = i,

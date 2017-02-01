@@ -87,15 +87,17 @@ model_ensemble <- function(yraw, gg, kk, ll,
 
   list(
     model_probability_predict_sub_not_normalized =
-      apply(model_probability_predict_sub_not_normalized,
+      apply(
+        as.matrix(
+          model_probability_predict_sub_not_normalized),
         1, mean),
     yy_predict_sub_aggregate =
-      yy_predict[1:dimension, 1, model_sort_2[1:sub, 2]] %*%
+      yy_predict[1:dimension, 1, model_sort_2[1:sub, 2]] *
         model_probability_predict_sub[t, ],
     yy_predict_density_sub_aggregate =
-      apply(yy_predict_density[1:dimension, ,
-        model_sort_2[1:sub, 2]], temp, function(x)
-          x %*% model_probability_predict_sub[t, ]),
+      apply(as.matrix(yy_predict_density[1:dimension, ,
+        model_sort_2[1:sub, 2]]), temp, function(x)
+          x * model_probability_predict_sub[t, ]),
     tt = tt
   )
 }
