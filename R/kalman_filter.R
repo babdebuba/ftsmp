@@ -34,8 +34,11 @@ yy_probability_predict <- model$yy_probability_predict
 yy_predict_density <- model$yy_predict_density
 }
 
+# pb <- utils::txtProgressBar(min = 2 + pp - 1, max = tt,
+#   style = 3)
 # kalman filter ---------------------------------------------
 for (t in (2 + pp - 1):tt) {
+  # utils::setTxtProgressBar(pb, value = t)
   # shift set minus 1 due to the prior at point in time 1
   zz_t_index <- (t * dd - dd + 1):(t * dd)
   if (dd == 1) {
@@ -74,7 +77,7 @@ for (t in (2 + pp - 1):tt) {
     beta_predict_variance %*% t(temp) +
     yy_update_variance
   # beta_update
-  yy_predict_variance_inverse <- solve(yy_predict_variance)
+  yy_predict_variance_inverse <- chol2inv(yy_predict_variance)
   beta_update_expectation[t, ] <-
     beta_predict_expectation[t, ] + beta_predict_variance %*%
     t(temp) %*% yy_predict_variance_inverse %*%
@@ -95,8 +98,8 @@ for (t in (2 + pp - 1):tt) {
   } else {
   yy_probability_predict[t] <- mvtnorm::dmvnorm(
     x = yy[t, 1:dimension],
-      yy_predict_expectation[t, 1:dimension],
-      yy_predict_variance[1:dimension, 1:dimension])
+    mean = yy_predict_expectation[t, 1:dimension],
+    sigma = yy_predict_variance[1:dimension, 1:dimension])
   }
 }
 
