@@ -26,7 +26,7 @@ model_ensemble <- function(yraw, gg, kk, ll,
   doParallel::registerDoParallel(cl)
   models <- foreach::foreach(i = 1:length(models),
     .packages = "ftsmp") %dopar%
-    do.call(kalman_filter, models[[i]])
+    kalman_filter(models[[i]])
   parallel::stopCluster(cl)
 
   # set dimensions

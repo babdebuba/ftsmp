@@ -2,4 +2,5 @@
 
 export(dimension_ensemble)
 export(kalman_filter)
+export(test)
 import(foreach)

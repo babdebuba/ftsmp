@@ -24,6 +24,6 @@ parameter_loader <- function() {
   ll <<- 1
   density_size <<- 5
   dimension <<- dd
-  is_length <<- tt / 2
+  is_length <<- round(tt / 2)
   cores_number <<- 4
 }
