@@ -1,64 +1,53 @@
 # model building function for the model yy = zz * beta -----------------------
-model_initialize <- function(yraw, pp, hh,
-                             prior_constant_variance,
-                             gg, kk, ll, density_size) {
+model_initialize <- function(yraw, pp, hh, tt, dd, is_length,
+  prior_constant_variance, gg, kk, ll, density_size) {
 
   # build the target variable and the predictor variables
-  # dimension of the time series
-  dd <- dim(yraw)[2]
-  tt <- dim(yraw)[1]
   # time series shifted due to pp and hh
-  yy <- as.matrix(yraw[(pp + hh):tt, ])
-  yy_cov <- stats::cov(yy)
-  tt <- dim(yy)[1]  # length of the time series
+  yy <- as.matrix(yraw[-(1:(pp + hh - 1)), ])
+  if (dd == 1) {
+    yy_cov <- stats::var(yy[1:is_length, ])
+  } else {
+    yy_cov <- stats::cov(yy[1:is_length, ])
+  }
+
   # build the variable zz
-  zz <- zz_build(yraw, pp, hh, dd, tt, predictor = 0)
-  zz_predictor <- zz_build(yraw, pp, hh, dd, tt,
-    predictor = 1)
-  zz_cols_number <- dim(zz)[2]  # number of cols of zz
-  # add unused NA rows for the prior at point in time 1
-  # and for the lag p
-  yy <- rbind(array(NA, dim = c(pp, dd)), yy)
-  zz <- rbind(array(NA, dim = c(pp, zz_cols_number)), zz)
-  zz_predictor <- rbind(array(NA,
-    dim = c(pp, zz_cols_number)), zz_predictor)
-  #
-  tt <- tt + pp
+  zz <- zz_build(yraw, pp, hh, dd, predictor = 0)
+  zz_predictor <- zz_build(yraw, pp, hh, dd, predictor = 1)
 
   # build beta_predict_expectation and beta_update_variance
-  beta_update_expectation <- array(0, dim = c(tt,
-    zz_cols_number))
+  beta_update_expectation <- matrix(0, nrow = dim(zz)[2])
   beta_predict_expectation <- NA * beta_update_expectation
 
   # build beta_predict_variance and beta_update_variance
-  temp <- 1
+  temp <- c(rep(gg[1], dd))
   if (pp >= 2) {
-    for (p in 2:pp) temp <- c(temp, gg[1] / p^2)
+    for (p in 2:pp) temp <- c(temp, rep(gg / p^2, dd))
   }
-  temp <- rep(temp, dd)
-  beta_update_variance <- diag(temp)
+  beta_update_variance <- diag(c(rep(
+    prior_constant_variance, dd), rep(temp, dd)))
   beta_predict_variance <- NA * beta_update_variance
 
   # build yy_predict_expectation, yy_predict_variance,
   # yy_update_variance, yy_predict_error_expectation,
   # yy_predict_error_variance, yy_predict_variance_inverse
-  yy_predict_expectation <- array(NA, dim = c(tt, dd))
-  yy_predict_variance <- array(NA, dim = c(dd, dd))
+  yy_predict_expectation <- matrix(NA, nrow = dd)
+  yy_predict_variance <- matrix(NA, nrow = 3, ncol = 3)
   yy_predict_variance_inverse <- NA * yy_predict_variance
   yy_predict_error_expectation <- yy_predict_expectation
-  yy_predict_error_variance <- array(NA, dim = c(dd, dd))
+  yy_predict_error_variance <- yy_predict_variance
   yy_update_variance <- kk * yy_cov
 
   # build yy_probability_predict
-  yy_probability_predict <- rep(NA, length = tt)
+  yy_probability_predict <- matrix(NA, nrow = tt)
 
-  # build yy_predict_density
+  # build yy_predict and yy_predict_density
+  yy_predict <- matrix(NA, nrow = tt, ncol = dd)
   yy_predict_density <- array(NA, dim = c(tt, dd,
     density_size))
 
   list(
-    dd = dd, hh = hh, pp = pp, tt = tt, yy = yy, yraw = yraw,
-    zz = zz, zz_predictor = zz_predictor,
+    yy = yy, zz = zz, zz_predictor = zz_predictor,
     beta_predict_expectation = beta_predict_expectation,
     beta_predict_variance = beta_predict_variance,
     beta_update_expectation = beta_update_expectation,
