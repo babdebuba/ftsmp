@@ -26,6 +26,7 @@ yy_predict_error_expectation <-
 yy_predict_error_variance <- model$yy_predict_error_variance
 yy_update_variance <- model$yy_update_variance
 yy_probability_predict <- model$yy_probability_predict
+yy_predict <- model$yy_predict
 yy_predict_density <- model$yy_predict_density
 }
 
@@ -58,51 +59,50 @@ for (t in 1:tt) {
     yy_update_variance <- yy_update_variance * kk +
       yy_predict_error_variance * (1 - kk)
   # }
-  if (dd == 1) {
-    temp2 <- Matrix::crossprod(beta_predict_variance, temp)
-  } else {
+  # if (dd == 1) {
+  #   temp2 <- Matrix::crossprod(beta_predict_variance, temp)
+  # } else {
     temp2 <- Matrix::tcrossprod(beta_predict_variance,
       temp)
-  }
+  # }
   yy_predict_variance <- temp %*% temp2 + yy_update_variance
   # beta_update
-  yy_predict_variance_inverse <- chol2inv(chol(
-    yy_predict_variance))
+  yy_predict_variance_inverse <- solve(
+    yy_predict_variance)
   temp2 <- temp2 %*% yy_predict_variance_inverse
   beta_update_expectation <- beta_predict_expectation +
     temp2 %*% yy_predict_error_expectation
   beta_update_variance <- beta_predict_variance -
     (temp2 %*% temp) %*% beta_predict_variance
   # yy_probability_predict
-  if (dd == 1) {
-    yy_probability_predict[t] <- stats::dnorm(
-      x = yy[t, 1:dimension],
-      yy_predict_expectation[1:dimension],
-      yy_predict_variance[1:dimension, 1:dimension])
-    if (yy_probability_predict[t] == 0) {
-      yy_probability_predict[t] <- 4.940656e-324
-    }
-  } else {
+  # if (dd == 1) {
+  #   yy_probability_predict[t] <- stats::dnorm(
+  #     x = yy[t, 1:dimension],
+  #     yy_predict_expectation[1:dimension],
+  #     yy_predict_variance[1:dimension, 1:dimension])
+  #   if (yy_probability_predict[t] == 0) {
+  #     yy_probability_predict[t] <- 4.940656e-324
+  #   }
+  # } else {
   yy_probability_predict[t] <- mvtnorm::dmvnorm(
     x = yy[t, 1:dimension],
     mean = yy_predict_expectation[1:dimension],
     sigma = as.matrix(
       yy_predict_variance[1:dimension, 1:dimension]))
-  # one step ahead prediction -------------------------------
+  # one step ahead prediction -----------------------------
   # yy_predict
-  yy_predict <- zz_predictor[zz_t_index, ] %*%
-      beta_update_expectation
-  yy_predict_density
-  yy_predict_density <- t(mvtnorm::rmvnorm(
+  yy_predict[t, ] <- as.vector(
+    zz_predictor[zz_t_index, ] %*% beta_update_expectation)
+  yy_predict_density[t, , ] <- mvtnorm::rmvnorm(
     n = density_size,
-    mean = yy_predict,
-    sigma = as.matrix(yy_update_variance)))
-  }
+    mean = yy_predict[t, 1:dimension],
+    sigma = as.matrix(
+      yy_update_variance[1:dimension, 1:dimension]))
+  # }
 }
 
 list(
   yy_probability_predict = yy_probability_predict,
-  yy_predict = yy_predict,
-  yy_predict_density = yy_predict_density,
-  tt = tt)
+  yy_predict = yy_predict[, 1:dimension],
+  yy_predict_density = yy_predict_density)
 }
