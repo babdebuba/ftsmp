@@ -11,42 +11,39 @@ model_ensemble <- function(yraw, gg, kk, ll,
   for (i in 1:dim(model_parameter)[1]) {
     models[[i]] <- list(yraw = yraw,
       pp = model_parameter[i, 4],
-      hh = hh,
-      prior_constant_variance = prior_constant_variance,
-      gg = model_parameter[i, 1],
+      hh = hh, dd = dd, tt = tt, gg = model_parameter[i, 1],
       kk = model_parameter[i, 2],
       ll = model_parameter[i, 3],
+      prior_constant_variance = prior_constant_variance,
+      is_length = is_length,
       density_size = density_size,
-      dimension = dimension, dd = dd,
-      tt = tt, is_length = is_length)
+      dimension = dimension)
   }
 
   # calculate the forecasts of every model
   cl <- parallel::makeCluster(cores_number)
   doParallel::registerDoParallel(cl)
   models <- foreach::foreach(i = 1:length(models),
-    .packages = "ftsmp") %dopar%
-    kalman_filter(models[[i]])
+    .packages = "ftsmp") %do%
+    do.call(kalman_filter, models[[i]])
   parallel::stopCluster(cl)
 
   # set dimensions
   model_number <- dim(model_parameter)[1]
-  dd <- dim(models[[1]]$yy_predict)[1]
-  tt <- models[[1]]$tt
-  density_size <- dim(models[[1]]$yy_predict_density)[2]
 
   # reshape yy_probability_predict, yy_predict and
   # yy_predict_density
   yy_probability_predict <- array(NA, dim = c(tt,
     model_number))
-  yy_predict <- array(NA, dim = c(dd, 1, model_number))
-  yy_predict_density <- array(NA, dim = c(dd, density_size,
+  yy_predict <- array(NA, dim = c(tt, dd, 1, model_number))
+  yy_predict_density <- array(NA, dim = c(tt, dd, density_size,
     model_number))
   for (i in 1:model_number) {
     yy_probability_predict[, i] <-
       models[[i]]$yy_probability_predict
-    yy_predict[, , i] <- models[[i]]$yy_predict
-    yy_predict_density[, , i] <- models[[i]]$yy_predict_density
+    yy_predict[, , , i] <- models[[i]]$yy_predict
+    yy_predict_density[, , , i] <-
+      models[[i]]$yy_predict_density
   }
 
   # build model_probability_predict and model_pobability_update

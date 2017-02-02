@@ -1,10 +1,8 @@
 # model building function for the model yy = zz * beta -----------------------
 model_initialize <- function(yraw, pp, hh,
-  prior_constant_variance,
-  gg, kk, ll,
-  density_size,
-  dimension, dd, tt,
-  is_length) {
+                             dd, tt, gg, kk, ll,
+                             prior_constant_variance,
+                             is_length, density_size) {
 
   # build the target variable and the predictor variables
   # time series shifted due to pp and hh

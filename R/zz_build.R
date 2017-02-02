@@ -1,5 +1,5 @@
 # build the variable zz of the overall model
-zz_build <- function(yraw, pp, hh, dd, predictor) {
+zz_build <- function(yraw, pp, hh, dd, tt, predictor) {
   zz <- stats::embed(yraw, pp)
   if (predictor == 0) {
     zz <- zz[1:(dim(zz)[1] - hh), ]
