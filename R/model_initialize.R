@@ -14,8 +14,8 @@ model_initialize <- function(yraw, pp, hh,
   }
 
   # build the variable zz
-  zz <- zz_build(yraw, pp, hh, dd, predictor = 0)
-  zz_predictor <- zz_build(yraw, pp, hh, dd, predictor = 1)
+  zz <- zz_build(yraw, pp, hh, dd, tt, predictor = 0)
+  zz_predictor <- zz_build(yraw, pp, hh, dd, tt, predictor = 1)
 
   # build beta_predict_expectation and beta_update_variance
   beta_update_expectation <- matrix(0, nrow = dim(zz)[2])
