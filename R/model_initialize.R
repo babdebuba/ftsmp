@@ -60,6 +60,7 @@ model_initialize <- function(yraw, pp, hh, tt, dd, is_length,
     yy_predict_error_variance = yy_predict_error_variance,
     yy_update_variance = yy_update_variance,
     yy_probability_predict = yy_probability_predict,
+    yy_predict = yy_predict,
     yy_predict_density = yy_predict_density
   )
 }

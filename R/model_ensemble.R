@@ -9,10 +9,12 @@ model_ensemble <- function(yraw, gg, kk, ll,
     pp = pp)
   models <- rep(list(""), dim(model_parameter)[1])
   for (i in 1:dim(model_parameter)[1]) {
-    models[[i]] <- list(yraw, gg = model_parameter[i, 1],
-      kk = model_parameter[i, 2], ll = model_parameter[i, 3],
-      pp = model_parameter[i, 4], dimension = dimension, hh,
-      prior_constant_variance, density_size)
+    models[[i]] <- list(yraw, pp = model_parameter[i, 4],
+      hh, prior_constant_variance,
+      gg = model_parameter[i, 1],
+      kk = model_parameter[i, 2],
+      ll = model_parameter[i, 3],
+      density_size, dimension)
   }
 
   # calculate the forecasts of every model

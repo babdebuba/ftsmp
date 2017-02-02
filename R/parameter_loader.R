@@ -1,8 +1,29 @@
 parameter_loader <- function() {
-  yraw <<- cbind(1:3, 11:13, 21:23)
-  pp <<- 1
-  hh <<- 1
-  dd <<- 2
-  tt <<- 3
+
+  # yraw <<- as.matrix(cbind(1:10))#, 11:20, 21:30))
+
+  # y <- stock_watson_transformed[, 1:75]
+  # delete_index <- y[7, ] == 65535 | y[160, ] == 65535
+  # y <- y[-c(1:6, 161:164), !delete_index]
+  # m <- apply(y, 2, mean)
+  # s <- apply(y, 2, sd)
+  # y <- t(apply(y, 1, function(x) (x - m) / s))
+  # yraw <<- as.matrix(y[, 1:5])
+
+  y <- stock_watson_forecast_errors$cn_rgdp_2
+  yraw <<- y[, 1:10]
+
+  pp <<- 4
+  hh <<- 2
+  dd <<- dim(yraw)[2]
+  tt <<- dim(yraw)[1] - pp - hh + 1
   predictor <<- 1
+  prior_constant_variance <<- 10
+  gg <<- .1
+  kk <<- 1
+  ll <<- 1
+  density_size <<- 5
+  dimension <<- dd
+  is_length <<- tt / 2
+  cores_number <<- 4
 }

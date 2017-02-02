@@ -1,3 +1,5 @@
+#' @export
+
 kalman_filter <- function(yraw, pp, hh,
                           prior_constant_variance,
                           gg, kk, ll,

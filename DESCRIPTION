@@ -16,5 +16,6 @@ Imports:
   stats,
   mvtnorm (>= 1.0-5),
   doParallel (>= 1.0.10),
-  foreach (>= 1.4.3)
+  foreach (>= 1.4.3),
+  Matrix (>= 1.2-7.1)
 
