@@ -4,7 +4,7 @@ kalman_filter <- function(yraw, pp, hh,
                           prior_constant_variance,
                           gg, kk, ll,
                           density_size,
-                          dimension) {
+                          dimension, dd, tt) {
 
 # initialize the model ---------------------------------------
 model <- model_initialize(yraw, pp, hh, tt, dd, is_length,
