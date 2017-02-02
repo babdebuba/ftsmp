@@ -8,8 +8,12 @@ kalman_filter <- function(yraw, pp, hh,
                           is_length) {
 
 # initialize the model ---------------------------------------
-model <- model_initialize(yraw, pp, hh, tt, dd, is_length,
-  prior_constant_variance, gg, kk, ll, density_size)
+model <- model_initialize(yraw, pp, hh,
+  prior_constant_variance,
+  gg, kk, ll,
+  density_size,
+  dimension, dd, tt,
+  is_length)
 
 # assign each object in the model list to a matrix ----------
 {
