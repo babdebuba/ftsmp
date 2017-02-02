@@ -14,7 +14,7 @@ model_ensemble <- function(yraw, gg, kk, ll,
       gg = model_parameter[i, 1],
       kk = model_parameter[i, 2],
       ll = model_parameter[i, 3],
-      density_size, dimension, dd, tt)
+      density_size, dimension, dd, tt, is_length)
   }
 
   # calculate the forecasts of every model
