@@ -7,11 +7,11 @@ model_initialize <- function(yraw, pp, hh,
   # build the target variable and the predictor variables
   # time series shifted due to pp and hh
   yy <- as.matrix(yraw[-(1:(pp + hh - 1)), ])
-  if (dd == 1) {
-    yy_cov <- stats::var(yy[1:is_length, ])
-  } else {
+  # if (dd == 1) {
+  #   yy_cov <- stats::var(yy[1:is_length, ])
+  # } else {
     yy_cov <- stats::cov(yy[1:is_length, ])
-  }
+  # }
 
   # build the variable zz
   zz <- zz_build(yraw, pp, hh, dd, tt, predictor = 0)

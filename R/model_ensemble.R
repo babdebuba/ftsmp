@@ -24,7 +24,7 @@ model_ensemble <- function(yraw, gg, kk, ll,
   cl <- parallel::makeCluster(cores_number)
   doParallel::registerDoParallel(cl)
   models <- foreach::foreach(i = 1:length(models),
-    .packages = "ftsmp") %dopar%
+    .packages = "ftsmp") %do%
     do.call(kalman_filter, models[[i]])
   parallel::stopCluster(cl)
 

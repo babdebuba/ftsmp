@@ -108,5 +108,8 @@ for (t in 1:tt) {
 list(
   yy_probability_predict = yy_probability_predict,
   yy_predict = yy_predict[, 1:dimension],
-  yy_predict_density = yy_predict_density)
+  yy_predict_density = yy_predict_density,
+  yy_predict_expectation = as.matrix(yy_predict_expectation),
+  yy_predict_variance = as.matrix(yy_predict_variance),
+  yy = yy)
 }
